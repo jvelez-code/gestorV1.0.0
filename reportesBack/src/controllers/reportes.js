@@ -656,6 +656,22 @@ const getReportes = async (req, res) =>{
 };
 
 
+const getReportesprueba = async (req, res) =>{
+    try {
+        //const response = await pool.query(`SELECT * FROM reportes WHERE estado=TRUE AND empresas like '%ASISTIDA%'`);
+        const response = await pool.query(`SELECT * FROM reportes WHERE id IN ('19','25','10','9','30','31','50','54','12')`);
+    if (res !== undefined) {
+        return res.json(response.rows);
+        pool.close();
+      }
+      
+    } 
+    catch (error) {
+        console.log(error); 
+    } 
+};
+
+
 
 module.exports = {
     inicio,
