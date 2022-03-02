@@ -1,7 +1,8 @@
-FROM node:10-alpine
+FROM node:14
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
+#intalacion de dependencias
 COPY package*.json ./
 RUN npm install
 
