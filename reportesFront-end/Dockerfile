@@ -1,23 +1,13 @@
-FROM node:lts
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-COPY package.json /usr/src/app
-
-RUN apt-get update && apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get update && apt-get install -y nodejs
-RUN npm install -g npm@8.5.2
+# Stage 0, based on Node.js, to build and compile Angular
+FROM node:lts as node
+WORKDIR /app
+COPY ./ /app/
+RUN npm install -g npm@8.5.3
 RUN npm link @angular/cli
+ARG configuration=production
+RUN npm run build
 
-COPY . /usr/src/app
-
-
-RUN npm run build --prod
-
-#Segunda Etapa
-FROM nginx:1.17.1-alpine
-
-#Si estas utilizando otra aplicacion cambia PokeApp por el nombre de tu app
-COPY --from=build-step /app/dist/reprotesFront /usr/share/nginx/html
+# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
+FROM nginx:alpine
+COPY --from=node /app/dist/reportesFront /usr/share/nginx/html
+COPY ./nginx-custom.conf /etc/nginx/conf.d/default.conf
